@@ -44,8 +44,11 @@ exports.getPost = async (req, res, next) => {
       let classKeys = [userId._id]
       let classesInList = data[i].likes
       let result = classesInList.filter(cls => classKeys.includes(cls.likedBy.toString()));
-      if (result) {
+      
+      if (result.length > 0) {
         data[i].isLiked = true
+      } else {
+        data[i].isLiked = false
       }
     }  
     res.status(200).json(data)
