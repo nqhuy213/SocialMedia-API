@@ -6,7 +6,8 @@ const postSchema = new mongoose.Schema(
       ref: 'User'
     },
     description: {
-      type: String
+      type: String,
+      required: true
     },
     image: {
       data: Buffer,

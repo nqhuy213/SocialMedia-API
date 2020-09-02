@@ -3,10 +3,17 @@ const commentSchema = new mongoose.Schema(
   {
     postedBy:{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
+      require: true
+    },
+    postId:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Post',
+      require: true
     },
     text: {
-      type: String
+      type: String,
+      require: true
     },
     image: {
       data: Buffer,
@@ -25,6 +32,6 @@ const commentSchema = new mongoose.Schema(
 )
 
 
-const Post = mongoose.model('Post', commentSchema)
+const Comment = mongoose.model('Comment', commentSchema)
 
-module.exports = Post
+module.exports = Comment
