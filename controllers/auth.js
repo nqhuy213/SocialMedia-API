@@ -11,12 +11,12 @@ exports.authenticate = async (req, res, next) => {
     }
     token = token.replace('Bearer ', '')
     const decoded = verifyToken(token)
-    const admin = Admin.findOne({_id: decoded})
-    if(!admin){
+    const user = User.findOne({_id: decoded})
+    if(!user){
       throwError('Token is not available or invalid', 401)
     }
     req.token = token,
-    req.adminId = decoded
+    req.userId = decoded
     next()
   }catch(err){
     passError(err, next)
@@ -52,7 +52,7 @@ exports.register = async (req, res, next) => {
     if(await User.findOne({email: email})){
       throwError('User already existed', 409)
     }else{
-      const newUser = new Writer(req.body)
+      const newUser = new User(req.body)
       await newUser.save()
       res.status(201).json({success: true, message: 'User created'})
     }
