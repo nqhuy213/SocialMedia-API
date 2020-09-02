@@ -12,10 +12,15 @@ exports.postPost = async (req, res, next) => {
     if (body.postedBy || body.comments || body.likes)
       res.status(401).json({ "error": true, "message": "Invalid input!" })
     else {
-      const newPost = new Post(body)
-      newPost.postedBy = userId
-      await newPost.save()
-      res.status(201).json({ success: true, message: 'Post created' })
+      try {
+        const newPost = new Post(body)
+        newPost.postedBy = userId
+        await newPost.save()
+        res.status(201).json({ success: true, message: 'Post created' })
+      } catch (err) {
+        throwError(err, next)
+      }
+      
     }
 }
   
@@ -26,13 +31,28 @@ exports.getPost = async (req, res, next) => {
   if (req.query.nextCount) {
     nextCount = req.query.nextCount
   }
-  if (postedBy) {        
-    const data = await Post.find({postedBy: postedBy}).select({__v: 0}).limit(10).skip(nextCount * 10)
+  try {
+    var data;
+    if (postedBy) {        
+      data = await Post.find({postedBy: postedBy}).select({__v: 0}).limit(10).skip(nextCount * 10)    
+      
+    } else {
+      data = await Post.find().select({ __v: 0}).limit(10).skip(nextCount * 10)
+      
+    }
+    for (var i = 0; i < data.length; i++) {
+      let classKeys = [userId._id]
+      let classesInList = data[i].likes
+      let result = classesInList.filter(cls => classKeys.includes(cls.likedBy.toString()));
+      if (result) {
+        data[i].isLiked = true
+      }
+    }  
     res.status(200).json(data)
-  } else {
-    const data = await Post.find().select({ __v: 0}).limit(10).skip(nextCount * 10)
-    res.status(200).json(data)
+  } catch (err) {
+    throwError(err, next)
   }
+  
   
 }
 
