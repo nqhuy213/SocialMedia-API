@@ -69,71 +69,8 @@ exports.register = async (req, res, next) => {
   }
 }
 
-exports.postPost = async (req, res, next) => {  
-  const {userId, token, body} = req
-  if (body.postedBy || body.comments || body.likes)
-    res.status(401).json({ "error": true, "message": "Invalid input!" })
-  else {
-    const newPost = new Post(body)
-    newPost.postedBy = userId
-    await newPost.save()
-    res.status(201).json({ success: true, message: 'Post created' })
-  }
-}
-
-exports.getPost = async (req, res, next) => {
-  
-  const userId = req.query.userId
-  var nextCount = 0
-  if (req.query.nextCount) {
-    nextCount = req.query.nextCount
-  }
-  if (userId) {        
-    const data = await Post.find({postedBy: userId}).select({comments: 0, __v: 0}).limit(10).skip(nextCount * 10)
-    res.status(200).json(data)
-  } else {
-    const data = await Post.find().select({comments: 0, __v: 0}).limit(10).skip(nextCount * 10)
-    res.status(200).json(data)
-  }
-  
-}
-
-exports.postComment = async (req, res, next) => {
-  const {userId, token, body} = req
-  if ( body.likes || body.postedBy || !req.query.postId) {
-    res.status(401).json({ "error": true, "message": "Invalid input!" })
-  } else {
-    try {
-      const newComment = new Comment(body)
-      newComment.postedBy = userId
-      await newComment.save()
-      const comment = {commentId: newComment._id}
-      await Post.updateOne(
-        {_id: req.query.postId},
-        {$push: { comments: comment}}
-      ) 
-      res.status(201).json({ success: true, message: 'Comment created' })
-    } catch (err) {
-      passError(err, next)
-    }
-    
-  }
-}
 
 
-exports.getComment = async (req, res, next) => {
-  const {userId, token, body} = req
-  if (!req.query.postId) {
-    res.status(401).json({ "error": true, "message": "Missing 'postId' in query" })
-  } else {
-    try {
-      var nextCount = 0
-      if (req.query.nextCount) nextCount = req.query.nextCount
-      const data = await Comment.find({postId: req.query.postId}).limit(5).skip(nextCount * 5)
-      res.status(200).json(data)
-    } catch (err) {
-      passError(err, next)
-    }
-    
-  }
-}
+
+
+

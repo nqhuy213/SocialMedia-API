@@ -3,6 +3,7 @@ require('dotenv').config()
 require('./db/mongoose')
 /** Routes */
 const authRoute = require('./routes/auth')
+const postRoute = require('./routes/post')
 
 
 /** Middlewares */
@@ -24,6 +25,7 @@ app.use(cors())
 
 /** Setup Routes */
 app.use('/auth', authRoute)
+app.use('/post', postRoute)
 
 
 /** Undefined Routes */
