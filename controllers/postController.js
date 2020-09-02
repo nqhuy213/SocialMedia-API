@@ -31,7 +31,6 @@ exports.getPost = async (req, res, next) => {
     res.status(200).json(data)
   } else {
     const data = await Post.find().select({ __v: 0}).limit(10).skip(nextCount * 10)
-    data = {...data, commentCount: data.comments.length}
     res.status(200).json(data)
   }
   
@@ -39,21 +38,21 @@ exports.getPost = async (req, res, next) => {
 
 exports.postLike = async (req, res, next) => {
   const {userId, token, body} = req
-  if (!req.query.postId) {
+  if (!body.postId) {
     res.status(401).json({ "error": true, "message": "Missing 'postId' query!" })
   } else {
     try{
       const like = { likedBy: userId }
-      var doc = await Post.find({ _id: req.query.postId, "likes.likedBy": userId})
+      var doc = await Post.find({ _id: body.postId, "likes.likedBy": userId})
       if (doc.length === 0) {
         await Post.updateOne(
-          { _id: req.query.postId },
+          { _id: body.postId },
           { $push: { likes: like } }
         )
         res.status(201).json({ success: true, message: 'Like added' })
       } else {
         await Post.updateOne(
-          { _id: req.query.postId },
+          { _id: body.postId },
           { $pull: { likes: like } }
         )
         res.status(201).json({ success: true, message: 'Like removed' })
