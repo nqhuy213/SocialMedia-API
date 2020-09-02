@@ -20,14 +20,14 @@ exports.postPost = async (req, res, next) => {
 }
   
 exports.getPost = async (req, res, next) => {
-  
-  const userId = req.query.userId
+  const userId = req.userId
+  const postedBy = req.query.postedBy
   var nextCount = 0
   if (req.query.nextCount) {
     nextCount = req.query.nextCount
   }
-  if (userId) {        
-    const data = await Post.find({postedBy: userId}).select({comments: 0, __v: 0}).limit(10).skip(nextCount * 10)
+  if (postedBy) {        
+    const data = await Post.find({postedBy: postedBy}).select({__v: 0}).limit(10).skip(nextCount * 10)
     res.status(200).json(data)
   } else {
     const data = await Post.find().select({ __v: 0}).limit(10).skip(nextCount * 10)
