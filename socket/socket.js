@@ -22,24 +22,23 @@ socket.init = function(server) {
       const like = { likedBy: userId }
       var doc = await Post.findOne({ _id: postId, "likes.likedBy": userId})
       if (!doc) {
-        var post = await Post.findOneAndUpdate(
+        toSend = await Post.findOneAndUpdate(
           { _id: postId },
           { $push: { likes: like } },
           {new: true},
         )
-        toSend = post.likes
       }else {
-        var post = await Post.findOneAndUpdate(
+        toSend = await Post.findOneAndUpdate(
           { _id: postId },
           { $pull: { likes: like } },
           {new: true}
         )
-        toSend = post.likes
       }
 
-      io.sockets.to(postId).emit(socketEvent.updateLike, toSend)
+      io.sockets.to(postId).emit(socketEvent.updatePost, toSend)
     })
     //#endregion
+
 
     socket.on('disconnect', () => {
       console.log('Socket Disconnected!!');

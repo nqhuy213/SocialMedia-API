@@ -16,7 +16,7 @@ exports.postPost = async (req, res, next) => {
         const newPost = new Post(body)
         newPost.postedBy = userId
         await newPost.save()
-        res.status(201).json({ success: true, message: 'Post created' })
+        res.status(201).json({ success: true, message: 'Post created', data: newPost })
       } catch (err) {
         throwError(err, next)
       }

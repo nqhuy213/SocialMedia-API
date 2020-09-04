@@ -1,6 +1,7 @@
 const socketMessage = {
   sendLike: 'like-sent',
   join:'join',
-  updateLike: 'update-like'
+  updatePost: 'update-post',
+  sendPost: 'send-post'
 }
 module.exports = socketMessage
