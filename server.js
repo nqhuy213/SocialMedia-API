@@ -14,8 +14,11 @@ const bodyParser = require('body-parser')
 const helmet = require('helmet')
 const cors = require('cors')
 const errorHandler = require('./middleware/error-handler')
-
+const socket = require('./socket/socket')
 const app = express()
+
+
+
 
 app.use(morgan('dev'))
 app.use(helmet())
@@ -37,10 +40,14 @@ app.use(function(req, res, next) {
 
 app.use(errorHandler)
 
-app.listen(process.env.PORT, () => {
+var server = app.listen(process.env.PORT, () => {
   console.log('API is running at http://localhost:%d',
   process.env.PORT
   )
 })
+
+socket.init(server)
+
+
 
 module.exports = app
