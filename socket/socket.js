@@ -44,20 +44,17 @@ socket.init = function(server) {
     socket.on(socketEvent.sendComment, async (data) => {
       
       const {text, postId, userId} = data
-
       try {
         const post = await Post.findOneAndUpdate(
-          {_id: body.postId},
-          { $push : {comments: {postedBy: userId, text: body.text}}},
+          {_id: postId},
+          { $push : {comments: {postedBy: userId, text: text}}},
           { new: true}
         )
-  
-  
-        res.status(201).json(post)
+        io.sockets.to(postId).emit(socketEvent.updatePost, post)
       } catch (err) {
-        passError(err, next)
+        
       }
-      io.sockets.to(data.postId).emit(socketEvent.updatePost, toSend)
+      
     })
     //#endregion
 
