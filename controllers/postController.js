@@ -89,14 +89,23 @@ exports.postLike = async (req, res, next) => {
   }
 }
 
-exports.postComment = async (req, res, next) => {
+exports.socketPostComment = async (req, res, next) => {
   const { userId, token, body } = req
   
   if (body.likes || body.postedBy || !body.postId || !body.text) {
     res.status(401).json({ "error": true, "message": "Invalid input!" })
   } else {
-    
-    
+    try {
+      const {postId, text} = body
+      const post = await Post.findOneAndUpdate(
+        {_id: postId},
+        { $push : {comments: {postedBy: userId, text: text}}},
+        { new: true}
+      )   
+      res.status(201).json(post)
+    } catch (err) {
+      res.status(401).json({"error": err.message})
+    } 
 
   }
 }
