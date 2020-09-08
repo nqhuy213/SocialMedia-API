@@ -2,6 +2,7 @@ const { listen } = require('socket.io')
 const socketEvent = require('./socketEvent')
 const Post = require('../models/post')
 const Comment = require('../models/comment')
+const { attachIsLiked } = require('../utils/attachIsLiked')
 var socket = {}
 
 socket.init = function(server) {
@@ -27,22 +28,38 @@ socket.init = function(server) {
           { _id: postId },
           { $push: { likes: like } },
           {new: true},
-        )
+        ).lean()
       }else {
         toSend = await Post.findOneAndUpdate(
           { _id: postId },
           { $pull: { likes: like } },
           {new: true}
-        )
+        ).lean()
       }
-
-      io.sockets.to(postId).emit(socketEvent.updatePost, toSend)
+      toSend = attachIsLiked(toSend, userId)
+      io.sockets.to(room).emit(socketEvent.updatePost, toSend)
     })
     //#endregion
 
     //#region Comment Post
     socket.on(socketEvent.sendComment, async (data) => {
-      var newComment = new Comment(data)
+      
+      const {text, postId, userId} = data
+
+      try {
+        const post = await Post.findOneAndUpdate(
+          {_id: body.postId},
+          { $push : {comments: {postedBy: userId, text: body.text}}},
+          { new: true}
+        )
+  
+  
+        res.status(201).json(post)
+      } catch (err) {
+        passError(err, next)
+      }
+
+
       await newComment.save()
       const comment = { commentId: newComment._id }
       const toSend = await Post.findOneAndUpdate(

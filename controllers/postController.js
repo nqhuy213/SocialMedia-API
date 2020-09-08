@@ -5,6 +5,8 @@ const Post = require('../models/post');
 const Comment = require('../models/comment')
 const User = require('../models/user')
 const ObjectId = require('mongodb').ObjectID;
+const mongoose = require('mongoose');
+const { attachIsLiked } = require('../utils/attachIsLiked');
 
 
 exports.postPost = async (req, res, next) => {  
@@ -41,7 +43,7 @@ exports.getPost = async (req, res, next) => {
     }else{
       var data;
       if (postedBy) {        
-        data = await Post.aggregate([{$match: {postedBy: postedBy}}])
+        data = await Post.aggregate([{$match: {postedBy: mongoose.Types.ObjectId(postedBy)}}])
         // .select({__v: 0}).limit(10).skip(nextCount * 10).lean()   
         
       } else {
@@ -52,19 +54,11 @@ exports.getPost = async (req, res, next) => {
       var result = []
       for (var i = 0; i < data.length; i++) {
         let post = data[i]
-        let isLiked;
-        const likeList = post.likes.map(l => {
-          return l.likedBy.toString()
-        })
-        if(likeList.includes(userId._id)){
-          isLiked = true 
-        }else{
-          isLiked = false
-        } 
-        post.isLiked = isLiked
+        post = attachIsLiked(post, userId._id)
         result.push(post)
-        res.status(200).json(result)   
       }  
+      res.status(200).json(result)   
+
     }
   } catch (err) {
     throwError(err, next)
@@ -100,5 +94,17 @@ exports.postLike = async (req, res, next) => {
     } catch (err) {
       throwError(err, next)
     }
+  }
+}
+
+exports.postComment = async (req, res, next) => {
+  const { userId, token, body } = req
+  
+  if (body.likes || body.postedBy || !body.postId || !body.text) {
+    res.status(401).json({ "error": true, "message": "Invalid input!" })
+  } else {
+    
+    
+
   }
 }
