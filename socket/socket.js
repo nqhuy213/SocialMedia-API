@@ -57,15 +57,6 @@ socket.init = function(server) {
       } catch (err) {
         passError(err, next)
       }
-
-
-      await newComment.save()
-      const comment = { commentId: newComment._id }
-      const toSend = await Post.findOneAndUpdate(
-        { _id: data.postId },
-        { $push: { comments: comment } },
-        { new: true }
-      )
       io.sockets.to(data.postId).emit(socketEvent.updatePost, toSend)
     })
     //#endregion
