@@ -27,31 +27,45 @@ exports.postPost = async (req, res, next) => {
 exports.getPost = async (req, res, next) => {
   const userId = req.userId
   const postedBy = req.query.postedBy
+  const postId = req.query.postId
   var nextCount = 0
   if (req.query.nextCount) {
     nextCount = req.query.nextCount
   }
   try {
-    var data;
-    if (postedBy) {        
-      data = await Post.find({postedBy: postedBy}).select({__v: 0}).limit(10).skip(nextCount * 10)    
-      
-    } else {
-      data = await Post.find().select({ __v: 0}).limit(10).skip(nextCount * 10)
-      
-    }
-    for (var i = 0; i < data.length; i++) {
-      let classKeys = [userId._id]
-      let classesInList = data[i].likes
-      let result = classesInList.filter(cls => classKeys.includes(cls.likedBy.toString()));
-      
-      if (result.length > 0) {
-        data[i].isLiked = true
+    if(postId){
+      let result = await Post.findOne({_id: postId}).lean()
+      let comments = await Comment.find({postId: postId}).lean()
+      result.comments = comments
+      res.status(200).json(result)
+    }else{
+      var data;
+      if (postedBy) {        
+        data = await Post.aggregate([{$match: {postedBy: postedBy}}])
+        // .select({__v: 0}).limit(10).skip(nextCount * 10).lean()   
+        
       } else {
-        data[i].isLiked = false
+        data = await Post.aggregate([{$match: {}}])
+        // .select({ __v: 0}).limit(10).skip(nextCount * 10).lean()
+        
       }
-    }  
-    res.status(200).json(data)
+      var result = []
+      for (var i = 0; i < data.length; i++) {
+        let post = data[i]
+        let isLiked;
+        const likeList = post.likes.map(l => {
+          return l.likedBy.toString()
+        })
+        if(likeList.includes(userId._id)){
+          isLiked = true 
+        }else{
+          isLiked = false
+        } 
+        post.isLiked = isLiked
+        result.push(post)
+        res.status(200).json(result)   
+      }  
+    }
   } catch (err) {
     throwError(err, next)
   }

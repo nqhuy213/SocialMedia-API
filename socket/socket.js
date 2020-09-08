@@ -1,6 +1,7 @@
 const { listen } = require('socket.io')
 const socketEvent = require('./socketEvent')
 const Post = require('../models/post')
+const Comment = require('../models/comment')
 var socket = {}
 
 socket.init = function(server) {
@@ -39,6 +40,19 @@ socket.init = function(server) {
     })
     //#endregion
 
+    //#region Comment Post
+    socket.on(socketEvent.sendComment, async (data) => {
+      var newComment = new Comment(data)
+      await newComment.save()
+      const comment = { commentId: newComment._id }
+      const toSend = await Post.findOneAndUpdate(
+        { _id: data.postId },
+        { $push: { comments: comment } },
+        { new: true }
+      )
+      io.sockets.to(data.postId).emit(socketEvent.updatePost, toSend)
+    })
+    //#endregion
 
     socket.on('disconnect', () => {
       console.log('Socket Disconnected!!');

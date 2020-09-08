@@ -13,10 +13,6 @@ const postSchema = new mongoose.Schema(
       data: Buffer,
       contentType: String
     },
-    isLiked: {
-      type: Boolean,
-      "default" : false
-    },
     comments: [{
       commentId: {
         type: mongoose.Schema.Types.ObjectId,
