@@ -36,8 +36,7 @@ socket.init = function(server) {
           {new: true}
         ).lean()
       }
-      toSend = attachIsLiked(toSend, userId)
-      io.sockets.to(room).emit(socketEvent.updatePost, toSend)
+      io.sockets.to(postId).emit(socketEvent.updatePost, toSend)
     })
     //#endregion
 

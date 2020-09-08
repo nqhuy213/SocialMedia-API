@@ -37,8 +37,6 @@ exports.getPost = async (req, res, next) => {
   try {
     if(postId){
       let result = await Post.findOne({_id: postId}).lean()
-      let comments = await Comment.find({postId: postId}).lean()
-      result.comments = comments
       res.status(200).json(result)
     }else{
       var data;
@@ -51,13 +49,7 @@ exports.getPost = async (req, res, next) => {
         // .select({ __v: 0}).limit(10).skip(nextCount * 10).lean()
         
       }
-      var result = []
-      for (var i = 0; i < data.length; i++) {
-        let post = data[i]
-        post = attachIsLiked(post, userId._id)
-        result.push(post)
-      }  
-      res.status(200).json(result)   
+      res.status(200).json(data)   
 
     }
   } catch (err) {
