@@ -15,6 +15,7 @@ const helmet = require('helmet')
 const cors = require('cors')
 const errorHandler = require('./middleware/error-handler')
 const socket = require('./socket/socket')
+const initSocket = require('./socket/socket-fix')
 const app = express()
 
 
@@ -46,7 +47,8 @@ var server = app.listen(process.env.PORT, () => {
   )
 })
 
-socket.init(server)
+initSocket(server)
+// socket.init(server)
 
 
 

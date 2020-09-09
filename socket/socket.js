@@ -50,11 +50,18 @@ socket.init = function(server) {
           { $push : {comments: {postedBy: userId, text: text}}},
           { new: true}
         )
-        io.sockets.to(postId).emit(socketEvent.updatePost, post)
+        
       } catch (err) {
         
       }
       
+    })
+    //#endregion
+
+    //#region 
+    socket.on(socketEvent.sendLikeComment, async(data) => {
+
+      io.sockets.to(data.postId).emit(socketEvent.updatePost, {a: 'alo'})
     })
     //#endregion
 
