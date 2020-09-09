@@ -9,10 +9,10 @@ function initSocket(server) {
     // Create event handlers for this socket
 
     //#region Join room
-    // socket.on('join', (room) => {
-    //   console.log(`Socket ${socket.id} joining ${room}`);
-    //   socket.join(room);
-    // });
+    socket.on('join', (room) => {
+      console.log(`Socket ${socket.id} joining ${room}`);
+      socket.join(room);
+    });
     //#endregion
 
     var eventHandlers = {
