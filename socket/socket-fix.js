@@ -26,10 +26,20 @@ function initSocket(server) {
         }
     }
 
+    socket.on('disconnecting', () => {
+      
+      for (var id in UserSockets){
+        if (UserSockets[id] === socket){
+          delete UserSockets[id]
+        }else{
+          UserSockets[id].emit('friend_offline', {userId: id})
+        }
+      }
+    })
+
     socket.on('disconnect', () => {
       console.log(`Socket ${socket.id} Disconnected`);
     })
-
   });
 }
 

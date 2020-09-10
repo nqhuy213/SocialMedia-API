@@ -1,6 +1,7 @@
 const Post = require("../../models/post")
+const User = require("../../models/user")
 
-var User = function (UserSockets, socket, io){
+var UserEventHandler = function (UserSockets, socket, io){
   this.UserSockets = UserSockets
   this.socket = socket
   this.io = io
@@ -16,16 +17,27 @@ var User = function (UserSockets, socket, io){
 
 
 async function login({userId}){
+  console.log(`User ${userId} logged in`);
   /**Notify friends */
   this.UserSockets[userId] = this.socket // Add the socket
+  const thisUser = await User.findOne({_id: userId}).select({firstName: 1, lastName:1, email:1, profileImage:1})
   for(var i in this.UserSockets){
-    this.UserSockets[i].emit('friend_online', {userId})
+    if(i !== userId){
+      this.UserSockets[i].emit('friend_online', thisUser)
+    }
   }
-  let activeUser = Object.keys(this.UserSockets)
+  /**Send all the active friends to the logged in user */
+  let activeUser = []
+  for (var id in this.UserSockets){
+    const user = await User.findOne({_id: id}).select({firstName: 1, lastName:1, email:1, profileImage:1})
+    activeUser.push(user)
+  }
   this.UserSockets[userId].emit('active_friends', activeUser)
+
 } 
 
 async function logout({userId}){
+  console.log(`User ${userId} logged out`);
   this.socket.disconnect() // Disconnect the socket
   delete this.UserSockets[userId] //Remove the socket
 
@@ -67,10 +79,10 @@ async function likePost({userId, postId}) {
   }
 }
 
-async function commentPost({postId, userId, text}){
+async function commentPost({userId, postId, commentData}){
   const post = await Post.findOneAndUpdate(
     {_id: postId},
-    { $push : {comments: {postedBy: userId, text: text}}},
+    { $push : {comments: {postedBy: userId, text: commentData.text}}},
     { new: true}
   ).populate('postedBy')
   /**TODO: Send to all relevant users (send to all users for now) */
@@ -79,9 +91,9 @@ async function commentPost({postId, userId, text}){
   }
 }
 
-async function likeComment({postId, commentId, userId}){
+async function likeComment({commentId, postId, userId}){
   
 }
 
 
-module.exports = User
+module.exports = UserEventHandler
