@@ -1,5 +1,6 @@
 const Post = require("../../models/post")
 const User = require("../../models/user")
+const Comment = require("../../models/comment")
 
 var UserEventHandler = function (UserSockets, socket, io){
   this.UserSockets = UserSockets
@@ -62,16 +63,39 @@ async function likePost({userId, postId}) {
   const doc = await Post.findOne({ _id: postId, "likes.likedBy": userId})
   var post
   if(!doc){ //User did not like the post
-    post  = await Post.findOneAndUpdate(
-      { _id: postId },
-      { $push: { likes: {likedBy: userId} } },
-      {new: true},).populate('postedBy').lean()
+    const post = await Post.findOneAndUpdate(
+        {_id: postId},
+        { $push: { likes: {likedBy: userId} } },
+        { new: true})
+        .populate({
+          path: 'comments',
+          populate : ({
+            path: 'postedBy',
+            select: 'firstName lastName profileImage'
+          })
+
+        })
+        .populate({
+          path: 'postedBy',
+          select: 'firstName lastName profileImage'
+        })
   }else{ //User already liked the post
     post = await Post.findOneAndUpdate(
-      {_id: postId},
-      { $pull: { likes: {likedBy: userId} } },
-      {new: true}
-    ).populate('postedBy').lean()
+        {_id: postId},
+        { $pull: { likes: {likedBy: userId} } },
+        { new: true})
+        .populate({
+          path: 'comments',
+          populate : ({
+            path: 'postedBy',
+            select: 'firstName lastName profileImage'
+          })
+
+        })
+        .populate({
+          path: 'postedBy',
+          select: 'firstName lastName profileImage'
+        })
   }
   /**TODO: Send to all relevant users (send to all users for now) */
   for (socket in this.UserSockets){
@@ -80,11 +104,29 @@ async function likePost({userId, postId}) {
 }
 
 async function commentPost({userId, postId, commentData}){
+
+  const newComment = new Comment()
+  newComment.postedBy = userId
+  newComment.postId = postId
+  newComment.text = commentData.text
+  await newComment.save()
+
   const post = await Post.findOneAndUpdate(
-    {_id: postId},
-    { $push : {comments: {postedBy: userId, text: commentData.text}}},
-    { new: true}
-  ).populate('postedBy')
+      {_id: postId},
+      { $push : {comments: {_id: newComment._id}}},
+      { new: true})
+      .populate({
+        path: 'comments',
+        populate : ({
+          path: 'postedBy',
+          select: 'firstName lastName profileImage'
+        })
+
+      })
+      .populate({
+        path: 'postedBy',
+        select: 'firstName lastName profileImage'
+      })
   /**TODO: Send to all relevant users (send to all users for now) */
   for (socket in this.UserSockets){
     this.UserSockets[socket].emit('update_post', post)
