@@ -47,13 +47,20 @@ socket.init = function(server) {
           {_id: postId},
           { $push : {comments: {postedBy: userId, text: text}}},
           { new: true}
-        )   
-        res.status(201).json(post)
-        io.sockets.to(data.postId).emit(socketEvent.updatePost, post)
+
+        )
+        
       } catch (err) {
-        res.status(401).json({"error": "True"})
+        
       }
       
+    })
+    //#endregion
+
+    //#region 
+    socket.on(socketEvent.sendLikeComment, async(data) => {
+
+      io.sockets.to(data.postId).emit(socketEvent.updatePost, {a: 'alo'})
     })
     //#endregion
 
