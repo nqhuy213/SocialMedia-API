@@ -193,4 +193,52 @@ exports.socketPostComment = async (req, res, next) => {
     } 
 
   }
+
+
+}
+
+exports.socketPostLikeComment = async (req, res, next) => {
+  const {userId, token, body} = req
+  if (!body.commentId || !body.postId) {
+    res.status(401).json({ "error": true, "message": "Missing 'postId' query!" })
+  } else {
+    const {commentId, postId} = body
+    try{
+      /**Notify users that active and relevant to the post */
+      const doc = await Comment.findOne({ _id: commentId, "likes.likedBy": userId})
+      if(!doc){ //User did not like the post
+        await Comment.findOneAndUpdate(
+            {_id: commentId},
+            { $push: { likes: {likedBy: userId} } },
+            { new: true})
+      }else{ //User already liked the post
+        await Comment.findOneAndUpdate(
+            {_id: commentId},
+            { $pull: { likes: {likedBy: userId} } },
+            { new: true})
+
+      }
+      const post = await Post.findOne({_id: postId})
+          .populate({
+            path: 'comments',
+            populate : ({
+              path: 'likes postedBy',
+              select: 'firstName lastName profileImage',
+              populate: ({
+                path: 'likedBy',
+                select: 'firstName lastName profileImage'
+                })
+              })
+          })
+          .populate({
+            path: 'postedBy',
+            select: 'firstName lastName profileImage'
+          })
+
+      res.status(201).json(post)
+
+    } catch (err) {
+      throwError(err, next)
+    }
+  }
 }

@@ -10,5 +10,6 @@ router.get('/',auth.authenticate, postController.getPost) //http://localhost:300
 router.post('/post-comment', auth.authenticate, postController.socketPostComment )
 
 router.post('/like', auth.authenticate, postController.postLike)
+router.post('/like-comment', auth.authenticate, postController.socketPostLikeComment)
 
 module.exports = router

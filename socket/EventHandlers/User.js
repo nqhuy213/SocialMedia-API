@@ -63,7 +63,7 @@ async function likePost({userId, postId}) {
   const doc = await Post.findOne({ _id: postId, "likes.likedBy": userId})
   var post
   if(!doc){ //User did not like the post
-    const post = await Post.findOneAndUpdate(
+     post = await Post.findOneAndUpdate(
         {_id: postId},
         { $push: { likes: {likedBy: userId} } },
         { new: true})
@@ -134,7 +134,41 @@ async function commentPost({userId, postId, commentData}){
 }
 
 async function likeComment({commentId, postId, userId}){
-  
+  /**Notify users that active and relevant to the post */
+  const doc = await Comment.findOne({ _id: commentId, "likes.likedBy": userId})
+  if(!doc){ //User did not like the post
+    await Comment.findOneAndUpdate(
+        {_id: commentId},
+        { $push: { likes: {likedBy: userId} } },
+        { new: true})
+  }else{ //User already liked the post
+    await Comment.findOneAndUpdate(
+        {_id: commentId},
+        { $pull: { likes: {likedBy: userId} } },
+        { new: true})
+
+  }
+  const post = await Post.findOne({_id: postId})
+      .populate({
+        path: 'comments',
+        populate : ({
+          path: 'likes postedBy',
+          select: 'firstName lastName profileImage',
+          populate: ({
+            path: 'likedBy',
+            select: 'firstName lastName profileImage'
+          })
+        })
+      })
+      .populate({
+        path: 'postedBy',
+        select: 'firstName lastName profileImage'
+      })
+
+  /**TODO: Send to all relevant users (send to all users for now) */
+  for (socket in this.UserSockets){
+    this.UserSockets[socket].emit('update_post', post)
+  }
 }
 
 
