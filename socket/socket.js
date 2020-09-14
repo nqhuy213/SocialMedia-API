@@ -2,11 +2,10 @@ const { listen } = require('socket.io')
 const socketEvent = require('./socketEvent')
 const Post = require('../models/post')
 const Comment = require('../models/comment')
-const { attachIsLiked } = require('../utils/attachIsLiked')
-var socket = {}
+let socket = {}
 
 socket.init = function(server) {
-  var io = require('socket.io').listen(server)
+  const io = require('socket.io').listen(server)
   io.sockets.on('connection', socket => {
     console.log('Socket Connected')
 

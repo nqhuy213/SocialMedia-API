@@ -28,33 +28,101 @@ exports.postPost = async (req, res, next) => {
   
 exports.getPost = async (req, res, next) => {
   const userId = req.userId
+
   const postedBy = req.query.postedBy
   const postId = req.query.postId
-  var nextCount = 0
+  let nextCount = 0
   if (req.query.nextCount) {
     nextCount = req.query.nextCount
   }
-  try {
+
     if(postId){
-      let result = await Post.findOne({_id: postId}).lean()
-      res.status(200).json(result)
+      await Post.findOne({_id: postId})
+          .populate({
+            path: 'comments',
+            populate : ({
+              path: 'postedBy',
+              select: 'firstName lastName profileImage'
+            })
+          })
+          .populate({
+            path: 'postedBy',
+            select: 'firstName lastName profileImage'
+          })
+          .exec(function (err, post) {
+            if (err) res.status(200).json({"message": err.message})
+            else {
+              if (post) {
+                res.status(200).json(post)
+              }
+              else
+                res.status(200).json({"message": "No post is found"})
+
+            }
+            })
     }else{
-      var data;
-      if (postedBy) {        
-        data = await Post.aggregate([{$match: {postedBy: mongoose.Types.ObjectId(postedBy)}}])
-        // .select({__v: 0}).limit(10).skip(nextCount * 10).lean()   
+      if (postedBy) {
+        // data = await Post.aggregate([{$match: {postedBy: mongoose.Types.ObjectId(postedBy)}}])
+        // .select({__v: 0}).limit(10).skip(nextCount * 10).lean()
+        console.log("dcm")
+        await  Post.find({postedBy: postedBy})
+            .populate({
+              path: 'comments',
+              populate : ({
+                path: 'postedBy',
+                select: 'firstName lastName profileImage'
+              })
+            })
+            .populate({
+              path: 'postedBy',
+              select: 'firstName lastName profileImage'
+            })
+            .limit(10).skip(nextCount * 10)
+            .exec(function (err, post) {
+              if (err) res.status(400).json({"error": true, "message": err.message})
+              else {
+                if (post) {
+                  console.log("Res post")
+                  res.status(200).json(post)
+                }
+                else
+                  res.status(200).json({"message": "No post is found"})
+              }
+
+            })
         
       } else {
-        data = await Post.aggregate([{$match: {}}])
+        // data = await Post.aggregate([{$match: {}}])
         // .select({ __v: 0}).limit(10).skip(nextCount * 10).lean()
-        
+        await  Post.find()
+            .populate({
+              path: 'comments',
+              populate : ({
+                path: 'postedBy',
+                select: 'firstName lastName profileImage'
+              })
+            })
+            .populate({
+              path: 'postedBy',
+              select: 'firstName lastName profileImage'
+            })
+            .limit(10).skip(nextCount * 10)
+            .exec(function (err, post) {
+              if (err) res.status(400).json({"error": true,"message": err.message})
+              else {
+                if (post) {
+                  res.status(200).json(post)
+                }
+                else
+                  res.status(200).json({"message": "No post is found"})
+
+              }
+
+            })
       }
-      res.status(200).json(data)   
 
     }
-  } catch (err) {
-    throwError(err, next)
-  }
+
   
   
 }
@@ -66,7 +134,7 @@ exports.postLike = async (req, res, next) => {
   } else {
     try{
       const like = { likedBy: userId }
-      var doc = await Post.find({ _id: body.postId, "likes.likedBy": userId})
+      let doc = await Post.find({ _id: body.postId, "likes.likedBy": userId})
       if (doc.length === 0) {
         await Post.updateOne(
           { _id: body.postId },
@@ -97,11 +165,28 @@ exports.socketPostComment = async (req, res, next) => {
   } else {
     try {
       const {postId, text} = body
+
+      const newComment = new Comment()
+      newComment.postedBy = userId
+      newComment.postId = postId
+      newComment.text = text
+      await newComment.save()
       const post = await Post.findOneAndUpdate(
         {_id: postId},
-        { $push : {comments: {postedBy: userId, text: text}}},
-        { new: true}
-      )   
+        { $push : {comments: {_id: newComment._id}}},
+        { new: true})
+          .populate({
+            path: 'comments',
+            populate : ({
+              path: 'postedBy',
+              select: 'firstName lastName profileImage'
+            })
+
+          })
+          .populate({
+            path: 'postedBy',
+            select: 'firstName lastName profileImage'
+          })
       res.status(201).json(post)
     } catch (err) {
       res.status(401).json({"error": err.message})
