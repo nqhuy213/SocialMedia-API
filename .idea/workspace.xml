@@ -12,6 +12,8 @@
     <list default="true" id="bd021f2c-e51e-45a3-aec1-4fe98c3048de" name="Default Changelist" comment="">
       <change afterPath="$PROJECT_DIR$/controllers/uploadController.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/routes/upload.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/SocialMedia-API.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SocialMedia-API.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/postController.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/postController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db/mongoose.js" beforeDir="false" afterPath="$PROJECT_DIR$/db/mongoose.js" afterDir="false" />
@@ -71,7 +73,7 @@
       <option name="presentableId" value="Default" />
       <updated>1600044053462</updated>
       <workItem from="1600044054763" duration="25210000" />
-      <workItem from="1600132242948" duration="7929000" />
+      <workItem from="1600132242948" duration="8382000" />
     </task>
     <servers />
   </component>
