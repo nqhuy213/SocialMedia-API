@@ -15,8 +15,15 @@ const imageSchema = new mongoose.Schema(
             ref: 'Post'
         },
         image: {
-            data: Buffer,
-            contentType: String
+            fieldname: String,
+            originalname: String,
+            encoding: String,
+            mimetype: String,
+            destination: String,
+            filename: String,
+            path: String,
+            size: Number,
+            url: String
         }
 
     },

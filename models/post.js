@@ -11,8 +11,8 @@ const postSchema = new mongoose.Schema(
       required: true
     },
     image: {
-      data: Buffer,
-      contentType: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Image'
     },
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
 

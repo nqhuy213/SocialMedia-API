@@ -1,26 +1,24 @@
 require('dotenv').config()
 
+/** Database connection **/
 require('./db/mongoose')
+
 /** Routes */
 const authRoute = require('./routes/auth')
 const postRoute = require('./routes/post')
-
+const uploadRoute = require('./routes/upload')
 
 /** Middlewares */
 const express = require('express')
 const morgan = require('morgan')
-const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const helmet = require('helmet')
 const cors = require('cors')
 const errorHandler = require('./middleware/error-handler')
-const socket = require('./socket/socket')
 const initSocket = require('./socket/socket-fix')
 const app = express()
 
-
-
-
+app.use(express.static (`uploads`))
 app.use(morgan('dev'))
 app.use(helmet())
 app.use(bodyParser.json());
@@ -30,6 +28,7 @@ app.use(cors())
 /** Setup Routes */
 app.use('/auth', authRoute)
 app.use('/post', postRoute)
+app.use('/upload', uploadRoute)
 
 
 /** Undefined Routes */
@@ -49,7 +48,5 @@ var server = app.listen(process.env.PORT, () => {
 
 initSocket(server)
 // socket.init(server)
-
-
 
 module.exports = app

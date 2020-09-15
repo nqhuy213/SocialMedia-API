@@ -16,8 +16,8 @@ const commentSchema = new mongoose.Schema(
       require: true
     },
     image: {
-      data: Buffer,
-      contentType: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Image'
     },
     likes: [{
       likedBy: {

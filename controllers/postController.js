@@ -1,12 +1,6 @@
 const { throwError, passError } = require('../utils/errors')
-const { verifyToken, generateToken } = require('../utils/token')
-const bcrypt = require('bcryptjs');
 const Post = require('../models/post');
 const Comment = require('../models/comment')
-const User = require('../models/user')
-const ObjectId = require('mongodb').ObjectID;
-const mongoose = require('mongoose');
-const { attachIsLiked } = require('../utils/attachIsLiked');
 
 
 exports.postPost = async (req, res, next) => {  

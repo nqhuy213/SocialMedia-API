@@ -32,8 +32,8 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     profileImage: {
-      type: Buffer,
-      contentType: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Image'
     }
   },
   {
