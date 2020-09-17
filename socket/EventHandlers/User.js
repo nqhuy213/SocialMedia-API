@@ -152,12 +152,8 @@ async function likeComment({commentId, postId, userId}){
       .populate({
         path: 'comments',
         populate : ({
-          path: 'likes postedBy',
-          select: 'firstName lastName profileImage',
-          populate: ({
-            path: 'likedBy',
-            select: 'firstName lastName profileImage'
-          })
+          path: 'postedBy',
+          select: 'firstName lastName profileImage'
         })
       })
       .populate({
