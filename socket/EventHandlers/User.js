@@ -19,9 +19,12 @@ var UserEventHandler = function (UserSockets, socket, io){
 
 async function login({userId}){
   console.log(`User ${userId} logged in`);
-  /**Notify friends */
+
+  
   this.UserSockets[userId] = this.socket // Add the socket
   const thisUser = await User.findOne({_id: userId}).select({firstName: 1, lastName:1, email:1, profileImage:1})
+  this.socket.emit('user_info', thisUser)
+  /**Notify friends */
   for(var i in this.UserSockets){
     if(i !== userId){
       this.UserSockets[i].emit('friend_online', thisUser)
