@@ -27,13 +27,15 @@ function initSocket(server) {
     }
 
     socket.on('disconnecting', () => {
-      
+      var offId;
       for (var id in UserSockets){
         if (UserSockets[id] === socket){
+          offId = id
           delete UserSockets[id]
-        }else{
-          UserSockets[id].emit('friend_offline', {userId: id})
         }
+      }
+      for(var id in UserSockets){
+        UserSockets[id].emit('friend_offline', {userId: offId})
       }
     })
 

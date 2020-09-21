@@ -12,7 +12,22 @@ exports.postPost = async (req, res, next) => {
         const newPost = new Post(body)
         newPost.postedBy = userId
         await newPost.save()
-        res.status(201).json({ success: true, message: 'Post created', data: newPost })
+        const toSend = post = await Post.findOne(
+          {_id: newPost._id},
+          )
+          .populate({
+            path: 'comments',
+            populate : ({
+              path: 'postedBy',
+              select: 'firstName lastName profileImage'
+            })
+  
+          })
+          .populate({
+            path: 'postedBy',
+            select: 'firstName lastName profileImage'
+          })
+        res.status(201).json({ success: true, message: 'Post created', data: toSend })
       } catch (err) {
         throwError(err, next)
       }
@@ -31,7 +46,7 @@ exports.getPost = async (req, res, next) => {
   }
 
     if(postId){
-      await Post.findOne({_id: postId})
+      await Post.findOne({_id: postId}).sort({createdAt: -1})
           .populate({
             path: 'comments',
             populate : ({
@@ -59,7 +74,7 @@ exports.getPost = async (req, res, next) => {
         // data = await Post.aggregate([{$match: {postedBy: mongoose.Types.ObjectId(postedBy)}}])
         // .select({__v: 0}).limit(10).skip(nextCount * 10).lean()
         console.log("dcm")
-        await  Post.find({postedBy: postedBy})
+        await  Post.find({postedBy: postedBy}).sort({createdAt: -1})
             .populate({
               path: 'comments',
               populate : ({
@@ -88,7 +103,7 @@ exports.getPost = async (req, res, next) => {
       } else {
         // data = await Post.aggregate([{$match: {}}])
         // .select({ __v: 0}).limit(10).skip(nextCount * 10).lean()
-        await  Post.find()
+        await  Post.find().sort({createdAt: -1})
             .populate({
               path: 'comments',
               populate : ({
