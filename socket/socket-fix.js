@@ -1,9 +1,10 @@
 
 var User = require('./EventHandlers/User');
-
+var Chat = require('./EventHandlers/Chat')
 function initSocket(server) {
   var io = require('socket.io').listen(server);
   var UserSockets = {}
+  var ChatSockets = {}
   io.sockets.on('connection', function (socket) {
     console.log(`Socket ${socket.id} connected`);
     // Create event handlers for this socket
@@ -16,7 +17,8 @@ function initSocket(server) {
     //#endregion
 
     var eventHandlers = {
-        user: new User(UserSockets, socket, io)
+        user: new User(UserSockets, socket, io),
+        chat: new Chat(UserSockets, ChatSockets, socket, io)
     };
     // Bind events to handlers
     for (var category in eventHandlers) {

@@ -19,7 +19,6 @@ var UserEventHandler = function (UserSockets, socket, io){
 
 async function login({userId}){
   console.log(`User ${userId} logged in`);
-
   
   this.UserSockets[userId] = this.socket // Add the socket
   const thisUser = await User.findOne({_id: userId}).select({firstName: 1, lastName:1, email:1, profileImage:1})
