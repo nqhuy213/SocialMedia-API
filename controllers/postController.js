@@ -79,13 +79,9 @@ exports.getPost = async (req, res, next) => {
       if (postedBy) {
         // data = await Post.aggregate([{$match: {postedBy: mongoose.Types.ObjectId(postedBy)}}])
         // .select({__v: 0}).limit(10).skip(nextCount * 10).lean()
-<<<<<<< HEAD
-        await  Post.find({postedBy: postedBy})
-=======
         let totalPost = await Post.countDocuments({postedBy: postedBy});
         await  Post.find({postedBy: postedBy})
 
->>>>>>> 4b76516fb7d5acb72af6c88621d1f4456f635642
             .populate({
               path: 'comments',
               populate : ({

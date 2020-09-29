@@ -14,6 +14,7 @@ const postSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Image'
     },
+    imageURL: String,
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
 
     likes: [{
