@@ -62,13 +62,13 @@ exports.getPost = async (req, res, next) => {
             path: 'image'
           })
           .exec(function (err, post) {
-            if (err) res.status(200).json({"message": err.message})
+            if (err) res.status(200).json({"error": true, "message": err.message})
             else {
               if (post) {
-                res.status(200).json(post)
+                res.status(200).json({"success": true, "data": post})
               }
               else
-                res.status(200).json({"message": "No post is found"})
+                res.status(200).json({"success": true, "message": "No post is found"})
 
             }
             })
@@ -76,7 +76,7 @@ exports.getPost = async (req, res, next) => {
       if (postedBy) {
         // data = await Post.aggregate([{$match: {postedBy: mongoose.Types.ObjectId(postedBy)}}])
         // .select({__v: 0}).limit(10).skip(nextCount * 10).lean()
-
+        let totalPost = await Post.countDocuments({postedBy: postedBy});
         await  Post.find({postedBy: postedBy})
 
             .populate({
@@ -98,11 +98,11 @@ exports.getPost = async (req, res, next) => {
               if (err) res.status(400).json({"error": true, "message": err.message})
               else {
                 if (post) {
-                  console.log("Res post")
-                  res.status(200).json(post)
+                  if (nextCount * 10 + post.length < totalPost) res.status(200).json({"success": true,"data": post, "hasMore": true})
+                  else res.status(200).json({"success": true, "data": post, "hasMore": false})
                 }
                 else
-                  res.status(200).json({"message": "No post is found"})
+                  res.status(200).json({"success": true, "message": "No post is found"})
               }
 
             })
@@ -110,6 +110,7 @@ exports.getPost = async (req, res, next) => {
       } else {
         // data = await Post.aggregate([{$match: {}}])
         // .select({ __v: 0}).limit(10).skip(nextCount * 10).lean()
+        let totalPost = await Post.countDocuments();
         await  Post.find().sort({createdAt: -1})
             .populate({
               path: 'comments',
@@ -130,10 +131,11 @@ exports.getPost = async (req, res, next) => {
               if (err) res.status(400).json({"error": true,"message": err.message})
               else {
                 if (post) {
-                  res.status(200).json(post)
+                  if (nextCount * 10 + post.length < totalPost) res.status(200).json({"posts": post, "hasMore": true})
+                  else res.status(200).json({"success": true, "data": post, "hasMore": false})
                 }
                 else
-                  res.status(200).json({"message": "No post is found"})
+                  res.status(200).json({"success": true, "message": "No post is found"})
 
               }
 

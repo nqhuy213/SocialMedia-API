@@ -65,7 +65,7 @@ exports.uploadImage = async (req, res, next) => {
             //         {image: newImage._id}
             //     )
             // }
-            res.status(200).json(newImage)
+            res.status(200).json({"success" : true, "data":newImage})
         } else {
             fs.unlink(tempPath, err => {
                 if (err) return throwError(err.message, 400);
