@@ -30,7 +30,7 @@ exports.validateUpload = (req, res, next) => {
 
 exports.uploadImage = async (req, res, next) => {
     const {userId, token, body} = req
-    const {description, postId, commentId} = body
+    const {description} = body
 
      try {
         const tempPath = req.file.path;
@@ -42,31 +42,30 @@ exports.uploadImage = async (req, res, next) => {
             let newImage = new Image()
             newImage.description = description
             newImage.postedBy = userId
-            newImage.postId = postId
             newImage.image = req.file
             await newImage.save()
 
-            if (description === "profileImage") {
-                await User.findOneAndUpdate(
-                    {_id: userId},
-                    { profileImage: newImage._id}
-                )
-            } else if (description === "postImage") {
-                await Post.findOneAndUpdate(
-                    {_id: postId},
-                    { image: newImage._id}
-                )
-            } else if (description === "commentImage") {
-                await Comment.findOneAndUpdate(
-                    {_id: commentId},
-                    {image: newImage._id}
-                )
-            }
+            // if (description === "profileImage") {
+            //     await User.findOneAndUpdate(
+            //         {_id: userId},
+            //         { profileImage: newImage._id}
+            //     )
+            // } else if (description === "postImage") {
+            //     await Post.findOneAndUpdate(
+            //         {_id: postId},
+            //         { image: newImage._id}
+            //     )
+            // } else if (description === "commentImage") {
+            //     await Comment.findOneAndUpdate(
+            //         {_id: commentId},
+            //         {image: newImage._id}
+            //     )
+            // }
             res.status(200).json(newImage)
         } else {
             fs.unlink(tempPath, err => {
                 if (err) return throwError(err.message, 400);
-                res.status(200).json({"error": true, "message": "Only .png files are allowed!"})
+                res.status(200).json({"error": true, "message": "Only .png .jpg files are allowed!"})
             })
         }
     } catch (err) {

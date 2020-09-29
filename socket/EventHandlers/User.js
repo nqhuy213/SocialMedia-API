@@ -103,12 +103,13 @@ async function likePost({userId, postId}) {
   }
 }
 
-async function commentPost({userId, postId, commentData}){
+async function commentPost({imageId, userId, postId, commentData}){
 
   const newComment = new Comment()
   newComment.postedBy = userId
   newComment.postId = postId
   newComment.text = commentData.text
+  if (imageId) newComment.image = imageId
   await newComment.save()
 
   const post = await Post.findOneAndUpdate(
@@ -126,6 +127,9 @@ async function commentPost({userId, postId, commentData}){
       .populate({
         path: 'postedBy',
         select: 'firstName lastName profileImage'
+      })
+      .populate({
+        path: 'image'
       })
   /**TODO: Send to all relevant users (send to all users for now) */
   for (socket in this.UserSockets){
