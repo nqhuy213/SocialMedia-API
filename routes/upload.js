@@ -6,8 +6,6 @@ const upload = require('../middleware/upload')
 
 router.post('/',upload.single("image"), auth.authenticate, uploadController.uploadImage)
 
-
 //Multi-part: image (image file), description (profileImage  || postImage || commentImage), postId (if desc = profile), commentId (desc = comment)
-
 
 module.exports = router

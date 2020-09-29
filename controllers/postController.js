@@ -58,6 +58,9 @@ exports.getPost = async (req, res, next) => {
             path: 'postedBy',
             select: 'firstName lastName profileImage'
           })
+          .populate({
+            path: 'image'
+          })
           .exec(function (err, post) {
             if (err) res.status(200).json({"message": err.message})
             else {
@@ -73,8 +76,7 @@ exports.getPost = async (req, res, next) => {
       if (postedBy) {
         // data = await Post.aggregate([{$match: {postedBy: mongoose.Types.ObjectId(postedBy)}}])
         // .select({__v: 0}).limit(10).skip(nextCount * 10).lean()
-        console.log("dcm")
-        await  Post.find({postedBy: postedBy}).sort({createdAt: -1})
+        await  Post.find({postedBy: postedBy})
             .populate({
               path: 'comments',
               populate : ({
@@ -85,6 +87,9 @@ exports.getPost = async (req, res, next) => {
             .populate({
               path: 'postedBy',
               select: 'firstName lastName profileImage'
+            })
+            .populate({
+              path: 'image'
             })
             .limit(10).skip(nextCount * 10)
             .exec(function (err, post) {
@@ -114,6 +119,9 @@ exports.getPost = async (req, res, next) => {
             .populate({
               path: 'postedBy',
               select: 'firstName lastName profileImage'
+            })
+            .populate({
+              path: 'image'
             })
             .limit(10).skip(nextCount * 10)
             .exec(function (err, post) {
@@ -173,12 +181,13 @@ exports.socketPostComment = async (req, res, next) => {
     res.status(401).json({ "error": true, "message": "Invalid input!" })
   } else {
     try {
-      const {postId, text} = body
+      const {image, postId, text} = body
 
       const newComment = new Comment()
       newComment.postedBy = userId
       newComment.postId = postId
       newComment.text = text
+      newComment.image = image
       await newComment.save()
       const post = await Post.findOneAndUpdate(
         {_id: postId},
@@ -188,13 +197,28 @@ exports.socketPostComment = async (req, res, next) => {
             path: 'comments',
             populate : ({
               path: 'postedBy',
-              select: 'firstName lastName profileImage'
+              select: 'firstName lastName profileImage',
+              populate: ({
+                path: 'profileImage'
+              })
             })
 
           })
           .populate({
             path: 'postedBy',
-            select: 'firstName lastName profileImage'
+            select: 'firstName lastName profileImage',
+            populate: ({
+              path: 'profileImage'
+            })
+          })
+          .populate({
+            path: 'comments',
+            populate : ({
+              path: 'image'
+            })
+          })
+          .populate({
+            path: 'image'
           })
       res.status(201).json(post)
     } catch (err) {
