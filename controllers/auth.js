@@ -51,7 +51,7 @@ exports.login = async (req, res, next) => {
 }
 
 exports.register = async (req, res, next) => {
-  const { email, password } = req.body
+  const {profileImage, email, password } = req.body
   try {
     if (await User.findOne({ email: email })) {
       throwError('User already existed', 409)
@@ -61,6 +61,7 @@ exports.register = async (req, res, next) => {
       if (password) {
         newUser.password = bcrypt.hashSync(password, 10);
       }
+    if (profileImage) newUser.profileImage = profileImage
       await newUser.save()
       res.status(201).json({ success: true, message: 'User created' })
     }

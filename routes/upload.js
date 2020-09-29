@@ -9,5 +9,4 @@ router.post('/',upload.single("image"), auth.authenticate, uploadController.uplo
 
 //Multi-part: image (image file), description (profileImage  || postImage || commentImage), postId (if desc = profile), commentId (desc = comment)
 
-
 module.exports = router
