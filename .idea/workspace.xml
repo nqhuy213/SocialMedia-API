@@ -12,8 +12,6 @@
     <list default="true" id="bd021f2c-e51e-45a3-aec1-4fe98c3048de" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/postController.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/postController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/uploadController.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/uploadController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/image.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/image.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,7 +69,7 @@
       <workItem from="1600508995765" duration="2267000" />
       <workItem from="1600579623407" duration="6793000" />
       <workItem from="1600832626811" duration="697000" />
-      <workItem from="1601337981939" duration="5163000" />
+      <workItem from="1601337981939" duration="6291000" />
     </task>
     <servers />
   </component>
