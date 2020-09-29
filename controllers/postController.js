@@ -25,9 +25,12 @@ exports.postPost = async (req, res, next) => {
           })
           .populate({
             path: 'postedBy',
-            select: 'firstName lastName profileImage'
+            select: 'firstName lastName profileImage',
+            populate : ({
+              path: 'profileImage'
+            })
           })
-        res.status(201).json({ success: true, message: 'Post created', data: toSend })
+        res.status(201).json({ success: true, message: 'Post created', data: {"result" : toSend} })
       } catch (err) {
         throwError(err, next)
       }
@@ -65,7 +68,7 @@ exports.getPost = async (req, res, next) => {
             if (err) res.status(200).json({"error": true, "message": err.message})
             else {
               if (post) {
-                res.status(200).json({"success": true, "data": post})
+                res.status(200).json({"success": true, "data": {"result": post}})
               }
               else
                 res.status(200).json({"success": true, "message": "No post is found"})
@@ -98,8 +101,8 @@ exports.getPost = async (req, res, next) => {
               if (err) res.status(400).json({"error": true, "message": err.message})
               else {
                 if (post) {
-                  if (nextCount * 10 + post.length < totalPost) res.status(200).json({"success": true,"data": post, "hasMore": true})
-                  else res.status(200).json({"success": true, "data": post, "hasMore": false})
+                  if (nextCount * 10 + post.length < totalPost) res.status(200).json({"success": true,"data":{"result": post, "nextCount": nextCount, "hasMore": true}})
+                  else res.status(200).json({"success": true, "data":{"result": post, "nextCount": nextCount, "hasMore": false}})
                 }
                 else
                   res.status(200).json({"success": true, "message": "No post is found"})
@@ -131,8 +134,8 @@ exports.getPost = async (req, res, next) => {
               if (err) res.status(400).json({"error": true,"message": err.message})
               else {
                 if (post) {
-                  if (nextCount * 10 + post.length < totalPost) res.status(200).json({"posts": post, "hasMore": true})
-                  else res.status(200).json({"success": true, "data": post, "hasMore": false})
+                  if (nextCount * 10 + post.length < totalPost) res.status(200).json({"success": true,"data":{"result": post, "nextCount": nextCount, "hasMore": true}})
+                  else res.status(200).json({"success": true, "data":{"result": post, "nextCount": nextCount, "hasMore": false}})
                 }
                 else
                   res.status(200).json({"success": true, "message": "No post is found"})
@@ -224,7 +227,7 @@ exports.socketPostComment = async (req, res, next) => {
           .populate({
             path: 'image'
           })
-      res.status(201).json(post)
+      res.status(201).json({"success": true, "data": {"result":post}})
     } catch (err) {
       res.status(401).json({"error": err.message})
     } 
@@ -272,7 +275,7 @@ exports.socketPostLikeComment = async (req, res, next) => {
             select: 'firstName lastName profileImage'
           })
 
-      res.status(201).json(post)
+      res.status(201).json({"success": true, "data": {"result":post}})
 
     } catch (err) {
       throwError(err, next)
