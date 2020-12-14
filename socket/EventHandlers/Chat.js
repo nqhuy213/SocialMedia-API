@@ -54,8 +54,8 @@ async function sendChat({ room, message }) {
     const newChat = await Chat.findOneAndUpdate(
       { _id: room },
       { $push: { messages: {
-        $each: [message],
-        $slice: -10
+        $each: [message]
+        // $slice: -10
       } } },
       { new: true }
     );
