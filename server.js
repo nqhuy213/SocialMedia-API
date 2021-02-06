@@ -7,6 +7,7 @@ require('./db/mongoose')
 const authRoute = require('./routes/auth')
 const postRoute = require('./routes/post')
 const uploadRoute = require('./routes/upload')
+const profileRoute = require('./routes/profile')
 
 /** Middlewares */
 const express = require('express')
@@ -29,7 +30,7 @@ app.use(cors())
 app.use('/auth', authRoute)
 app.use('/post', postRoute)
 app.use('/upload', uploadRoute)
-
+app.use('/profile', profileRoute)
 
 /** Undefined Routes */
 app.use(function(req, res, next) {

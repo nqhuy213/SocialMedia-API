@@ -11,6 +11,7 @@ router.post('/login', auth.login)
 router.post('/register', auth.register)
 
 
+
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'public/uploads/')
