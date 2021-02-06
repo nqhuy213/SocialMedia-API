@@ -19,12 +19,13 @@ const errorHandler = require('./middleware/error-handler')
 const initSocket = require('./socket/socket-fix')
 const app = express()
 
+app.use(cors())
 app.use(express.static (`uploads`))
 app.use(morgan('dev'))
 app.use(helmet())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors())
+
 
 /** Setup Routes */
 app.use('/auth', authRoute)
