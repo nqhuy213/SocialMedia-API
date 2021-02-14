@@ -21,7 +21,7 @@ async function login({userId}){
   console.log(`User ${userId} logged in`);
   
   this.UserSockets[userId] = this.socket // Add the socket
-  const thisUser = await User.findOne({_id: userId}).select({firstName: 1, lastName:1, email:1, profileImage:1})
+  const thisUser = await User.findOne({_id: userId}).select({password: 0})
   this.socket.emit('user_info', thisUser)
   /**Notify friends */
   for(var i in this.UserSockets){
@@ -32,7 +32,7 @@ async function login({userId}){
   /**Send all the active friends to the logged in user */
   let activeUser = []
   for (var id in this.UserSockets){
-    const user = await User.findOne({_id: id}).select({firstName: 1, lastName:1, email:1, profileImage:1})
+    const user = await User.findOne({_id: id}).select({password: 0})
     activeUser.push(user)
   }
   this.UserSockets[userId].emit('active_friends', activeUser)

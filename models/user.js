@@ -31,9 +31,11 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
     },
-    profileImage: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Image'
+    profileImageURL: {
+      type: String,
+    },
+    coverImageURL: {
+      type:String
     }
   },
   {

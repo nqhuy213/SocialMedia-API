@@ -38,7 +38,7 @@ async function joinChat(participants) {
     { messages: { $slice: -10 } }
   ).populate({
     path: "participants",
-    select: "firstName lastName profileImage",
+    select: "firstName lastName profileImageURL",
   });
   this.socket.join(room);
   this.ChatSockets[room] = participants;
